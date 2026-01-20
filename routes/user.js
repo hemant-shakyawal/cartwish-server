@@ -11,13 +11,13 @@ const createUserSchema = Joi.object({
     name: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
-    delveryAddress: Joi.string().min(5).required()
+    deliveryAddress: Joi.string().min(5).required()
 });
 
 // Create a new user
 router.post('/', async (req, res) => {
     try {
-        const { name, email, password, delveryAddress } = req.body;
+        const { name, email, password, deliveryAddress } = req.body;
         const joyValidation = createUserSchema.validate(req.body);
         if (joyValidation.error) {
             return res.status(400).json({ message: joyValidation.error.details[0].message });
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
             name: name,
             email: email,
             password: hashPassword,
-            delveryAddress: delveryAddress
+            deliveryAddress: deliveryAddress
         });
 
         await newUser.save();

@@ -4,11 +4,10 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: false },
     googleId: { type: String, unique: true, },
-    delveryAddress: { type: String, required: false },
+    deliveryAddress: { type: String, required: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user' }
 });
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.models.user || mongoose.model('user', userSchema);
 module.exports = User;
-
 
