@@ -1,8 +1,10 @@
 require("dotenv").config();
+require("./config/passport");
 const express = require('express');
 const app = express();
 
 const userRoutes = require('./routes/user');
+const authRoutes = require('./routes/auth');
 app.use(express.json());
 
 const mongoose = require('mongoose');
@@ -14,6 +16,7 @@ mongoose.connect(process.env.MONGO_URL, {
 });
 
 app.use("/api/user", userRoutes)
+app.use("/api/auth", authRoutes)
 
 const PORT = process.env.PORT || 3200;
 app.listen(PORT, () => {
