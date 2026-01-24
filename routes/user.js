@@ -38,10 +38,23 @@ router.post('/', async (req, res) => {
         });
 
         await newUser.save();
-        const token = generateToken({ id: newUser._id, name: newUser.name });
+        const { accessToken, refreshToken } = generateTokens({ _id: newUser._id, name: newUser.name });
+
+        const newHashRefreshToken = await bcrypt.hash(refreshToken, 10);//hash refresh token before saving to db
+
+        newUser.refreshToken = newHashRefreshToken;
+        await newUser.save();
 
 
-        res.status(201).json(token);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: false, //set true in production
+            sameSite: 'lax',
+            //domain: 'app.domain.com',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });//call always secure in production
+
+        res.status(201).json(accessToken);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error });
     }
@@ -63,9 +76,23 @@ router.post('/login', async (req, res) => {
         if (!validPassword) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
-        //create jwt token
-        const token = generateToken({ id: user._id, name: user.name });
-        res.status(201).json(token);
+        //create jwt token and send in response
+        const { accessToken, refreshToken } = generateTokens({ _id: user._id, name: user.name });
+
+        const newHashRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+        user.refreshToken = newHashRefreshToken;
+        await user.save();
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: false, //set true in production
+            sameSite: 'lax',
+            //domain: 'app.domain.com',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });//call always secure in production
+
+
+        res.status(201).json(accessToken);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error });
     }
@@ -81,11 +108,16 @@ router.get('/', authMiddeleware, async (req, res) => {
         res.status(500).json({ message: 'Server Error', error });
     }
 });
-const generateToken = (data) => {
-    return jwt.sign(data,
-        process.env.JWT_SECRET,
-        { expiresIn: '2h' }
+const generateTokens = (data) => {
+    const accessToken = jwt.sign({ _id: data._id, name: data.name },
+        process.env.ACCESS_TOKEN_KEY,
+        { expiresIn: '5m' }
     );
+    const refreshToken = jwt.sign({ _id: data._id },
+        process.env.REFRESH_TOKEN_KEY,
+        { expiresIn: '7d' }
+    );
+    return { accessToken, refreshToken };
 };
 
 module.exports = router;

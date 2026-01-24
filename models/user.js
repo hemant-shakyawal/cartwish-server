@@ -1,3 +1,4 @@
+const { ref } = require('joi');
 const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true, minlength: 3, },
@@ -6,7 +7,8 @@ const userSchema = new mongoose.Schema({
     googleId: { type: String, unique: true, },
     facebookId: { type: String, unique: true, },
     deliveryAddress: { type: String, required: false },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' }
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    refreshToken: { type: String },
 });
 
 const User = mongoose.models.user || mongoose.model('user', userSchema);
