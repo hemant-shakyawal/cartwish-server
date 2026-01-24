@@ -1,11 +1,13 @@
 require("dotenv").config();
 require("./config/passport");
 const express = require('express');
+const cookieParser = require('cookie-parser'); //for refresh token in cookie
 const app = express();
 
 const userRoutes = require('./routes/user');
 const authRoutes = require('./routes/auth');
 app.use(express.json());
+app.use(cookieParser());
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL, {
