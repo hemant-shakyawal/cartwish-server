@@ -6,8 +6,12 @@ const app = express();
 
 const userRoutes = require('./routes/user');
 const authRoutes = require('./routes/auth');
+const categoryRoutes = require('./routes/category');
+const productRoutes = require('./routes/product');
+
 app.use(express.json());
 app.use(cookieParser());
+app.use('/uploads/category', express.static('uploads/category'));
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO_URL, {
@@ -19,6 +23,8 @@ mongoose.connect(process.env.MONGO_URL, {
 
 app.use("/api/user", userRoutes)
 app.use("/api/auth", authRoutes)
+app.use("/api/category", categoryRoutes)
+app.use("/api/products", productRoutes)
 
 const PORT = process.env.PORT || 3200;
 app.listen(PORT, () => {

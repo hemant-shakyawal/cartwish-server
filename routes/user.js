@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
         });
 
         await newUser.save();
-        const { accessToken, refreshToken } = generateTokens({ _id: newUser._id, name: newUser.name });
+        const { accessToken, refreshToken } = generateTokens({ _id: newUser._id, name: newUser.name, role: newUser.role });
 
         const newHashRefreshToken = await bcrypt.hash(refreshToken, 10);//hash refresh token before saving to db
 
@@ -77,7 +77,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
         //create jwt token and send in response
-        const { accessToken, refreshToken } = generateTokens({ _id: user._id, name: user.name });
+        const { accessToken, refreshToken } = generateTokens({ _id: user._id, name: user.name, role: user.role });
 
         const newHashRefreshToken = await bcrypt.hash(refreshToken, 10);
 
