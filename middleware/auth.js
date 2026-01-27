@@ -15,7 +15,7 @@ const authMiddeleware = (req, res, next) => {
     try {
         // Here you would normally verify the token
         // For example, using JWT:
-        const decodedUser = jwt.verify(token, process.env.JWT_SECRET);
+        const decodedUser = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
 
         // For demonstration, we'll just attach a dummy user
         req.user = decodedUser; // Replace with actual decoded token data

@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../models/User');
+const User = require('../models/user');
 
 router.get('/google', passport.authenticate('google', {
     scope: ['email', 'profile']
@@ -61,7 +61,7 @@ const handleOauthCallback = async (req, res, profile, providerID) => {
         user[providerID] = profile.id;
     }
 
-    const { accessToken, refreshToken } = generateTokens({ _id: user._id, name: user.name });
+    const { accessToken, refreshToken } = generateTokens({ _id: user._id, name: user.name, role: user.role });
     user.refreshToken = await bcrypt.hash(refreshToken, 10);
     await user.save();
 
@@ -109,7 +109,9 @@ router.post('/refresh', async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens({
         _id: user._id,
-        name: user.name
+        name: user.name,
+        role: user.role
+
     });
 
     user.refreshToken = await bcrypt.hash(refreshToken, 10);
@@ -161,7 +163,7 @@ router.post('/logout', async (req, res) => {
 });
 
 const generateTokens = (data) => {
-    const accessToken = jwt.sign({ _id: data._id, name: data.name },
+    const accessToken = jwt.sign({ _id: data._id, name: data.name, role: data.role },
         process.env.ACCESS_TOKEN_KEY,
         { expiresIn: '5m' }
     );
