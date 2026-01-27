@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
+
 const authMiddleware = require('../middleware/auth');
-const checkSeller = require('../middleware/checkSeller');
+const checkRole = require('../middleware/checkRole');
 
 
 
-router.post('/', authMiddleware, checkSeller, (req, res) => {
+
+router.post('/', authMiddleware, checkRole("seller"),  (req, res) => {
     res.send("Seller is here")
 
 });
