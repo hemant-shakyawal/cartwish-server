@@ -34,7 +34,8 @@ router.post('/', async (req, res) => {
             name: name,
             email: email,
             password: hashPassword,
-            deliveryAddress: deliveryAddress
+            deliveryAddress: deliveryAddress,
+            
         });
 
         await newUser.save();

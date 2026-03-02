@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/category');
 const multer = require('multer');
+const checkRole = require('../middleware/checkRole');
+const authMiddeleware = require('../middleware/auth');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -32,7 +34,7 @@ const upload = multer({
 
 });
 
-router.post('/', upload.single('icon'), async (req, res) => {
+router.post('/', authMiddeleware, checkRole("admin"), upload.single('icon'), async (req, res) => {
     try {
 
         if (!req.body.name || !req.file) {
